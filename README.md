@@ -1,2 +1,2 @@
 # pumpwood-postgres-error-treatment
-Package with classes to treatment of postgres (psycopg2 associated errors
+Package with classes to treatment of postgres and SQLAlchemy associated errors.
