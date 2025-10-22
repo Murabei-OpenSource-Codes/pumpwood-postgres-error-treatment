@@ -23,7 +23,6 @@ def extract_pg_diagnostics(error: IntegrityError) -> dict:
     if not diag:
         return {}
     return {
-        "schema": getattr(diag, "schema_name", None),
         "table": getattr(diag, "table_name", None),
         "column": getattr(diag, "column_name", None),
         "constraint": getattr(diag, "constraint_name", None),
