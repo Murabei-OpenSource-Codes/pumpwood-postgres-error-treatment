@@ -1,7 +1,9 @@
 """Class to treat unique violation raised from SQLAlchemy."""
 import pandas as pd
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.engine import Engine
+from psycopg2.errors import UniqueViolation
+from pumpwood_communication.exceptions import PumpWoodDatabaseError
+from .auxiliary import extract_pg_diagnostics
 
 
 query = """
@@ -20,37 +22,35 @@ WHERE 1=1
 """
 
 
-class TreatSQLAlchemyUniqueViolation:
+class TreatPsycopg2UniqueViolation:
     """Treat unique constrain error from database."""
 
     @classmethod
-    def treat(cls, error: IntegrityError, engine: Engine) -> dict:
-        """Treat SQLAlchemy Unique Violation.
+    def treat(cls, error: UniqueViolation, engine: Engine) -> dict:
+        """Treat psycopg2 error.
 
         Args:
-            error (IntegrityError):
-                pass
+            error (UniqueViolation):
+                Psycopg2 UniqueViolation error.
             engine (Engine):
-                pass
+                SQLAlchemy engine, it is used to get information from
+                database and log error.
+
         Returns:
             Return a dictionary with message and other exception information.
         """
+        pg_diag = extract_pg_diagnostics(error)
+
+        # Extract columns associated with columns
         query_results = pd.read_sql(
             query, con=engine, params={
                 'table_name': error.orig.diag.table_name,
                 'constraint_name': error.orig.diag.constraint_name})
-
         columns = query_results['column_name'].tolist()
-        columns_str = ", ".join(columns)
+        unique_columns = ", ".join(columns)
         message = (
-            "Unique constrain violated, columns [{columns_str}] must be "
+            "Unique constrain violated, columns [{unique_columns}] must be "
             "unique.")
-        return {
-            "message": message,
-            "type": "PumpWoodUniqueDatabaseError",
-            "payload": {
-                "db_error": str(error),
-                "columns_str": columns_str,
-                "columns": columns
-            }
-        }
+        pg_diag['unique_columns'] = unique_columns
+        return PumpWoodDatabaseError(message=message, payload=pg_diag)\
+            .to_dict()
