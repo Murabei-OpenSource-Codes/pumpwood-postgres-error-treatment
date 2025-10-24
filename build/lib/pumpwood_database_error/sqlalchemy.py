@@ -1,9 +1,8 @@
 """Main module to treat SQLAlchemy errors."""
-from sqlalchemy import create_engine
-from sqlalchemy.pool import NullPool
+from loguru import logger
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from pumpwood_database_error.sqlalchemy_error import (
-    TreatSQLAlchemyUniqueViolation)
+from pumpwood_database_error.psycopg2 import TreatPsycopg2Error
+from pumpwood_communication.exceptions import PumpWoodDatabaseError
 
 
 class TreatSQLAlchemyError:
@@ -22,17 +21,18 @@ class TreatSQLAlchemyError:
         Returns:
             Return a dictionary with
         """
-        # Create the engine with NullPool
-        engine = create_engine(connection_url, poolclass=NullPool)
-
         if isinstance(error, IntegrityError):
-            return TreatSQLAlchemyUniqueViolation.treat(
-                error=error, engine=engine)
+            return TreatPsycopg2Error.treat(
+                error=error.orig, connection_url=connection_url)
         else:
-            message = str(error)
-            print("not treated:", message)
-            return {
-                "message": message,
-                "type": "PumpWoodDatabaseError",
-                "payload": {}
-            }
+            message = (
+                "SQLAlchemy error [{erro_type}] not treated. "
+                "Message:\n{message}")
+            return_dict = PumpWoodDatabaseError(
+                message=message,
+                payload={
+                    'erro_type': type(error).__name__,
+                    'message': str(error)})\
+                .to_dict()
+            logger.warning(return_dict['message'])
+            return return_dict

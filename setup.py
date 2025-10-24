@@ -18,7 +18,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setuptools.setup(
     name='pumpwood-database-error',
-    version='0.0.2',
+    version='0.0.4',
     include_package_data=True,
     license='BSD-3-Clause License',
     description=(
@@ -37,7 +37,9 @@ setuptools.setup(
     install_requires=[
         "psycopg2-binary",
         "SQLAlchemy>=2.0.37",
-        "pandas"],
+        "pandas",
+        "loguru>=0.7.3",
+        "pumpwood-communication>=2.2.26"],
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.12",
 )

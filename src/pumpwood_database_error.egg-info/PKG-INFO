@@ -1,29 +1,19 @@
-Metadata-Version: 2.2
+Metadata-Version: 2.1
 Name: pumpwood-database-error
-Version: 0.0.2
+Version: 0.0.4
 Summary: Package with classes to treatment of database associated errors
 Home-page: https://github.com/Murabei-OpenSource-Codes/pumpwood-communication
 Author: André Andrade Baceti
 Author-email: a.baceti@murabei.com
 License: BSD-3-Clause License
+Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: Operating System :: OS Independent
 Requires-Python: >=3.12
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: psycopg2-binary
-Requires-Dist: SQLAlchemy>=2.0.37
-Requires-Dist: pandas
-Dynamic: author
-Dynamic: author-email
-Dynamic: classifier
-Dynamic: description
-Dynamic: description-content-type
-Dynamic: home-page
-Dynamic: license
-Dynamic: requires-dist
-Dynamic: requires-python
-Dynamic: summary
 
 # pumpwood-postgres-error-treatment
 Package with classes to treatment of postgres and SQLAlchemy associated errors.
+
+
