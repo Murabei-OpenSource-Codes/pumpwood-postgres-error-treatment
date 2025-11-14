@@ -1,13 +1,11 @@
-"""Class to treat unique violation raised from Psycopg2."""
+"""Errors associated with object not found using SQLAlchemy."""
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.engine import Engine
-from psycopg2.errors import CheckViolation
-from pumpwood_communication.exceptions import PumpWoodDatabaseError
+from pumpwood_communication.exceptions import PumpWoodObjectDoesNotExist
 from pumpwood_database_error.abc import ErrorTreatmentABC
 
-from .auxiliary import extract_pg_diagnostics
 
-
-class TreatPsycopg2CheckViolation(ErrorTreatmentABC):
+class TreatSQLAlchemyNoResultFound(ErrorTreatmentABC):
     """Treat unique constrain error from database."""
 
     @classmethod
@@ -17,14 +15,14 @@ class TreatPsycopg2CheckViolation(ErrorTreatmentABC):
         Returns:
             Returns true if error is of the class treated by this class.
         """
-        return isinstance(error, CheckViolation)
+        return isinstance(error, NoResultFound)
 
     @classmethod
-    def treat(cls, error: CheckViolation, engine: Engine) -> dict:
-        """Treat psycopg2 error.
+    def treat(cls, error: NoResultFound, engine: Engine) -> dict:
+        """Treat sqlalchemy not found errors.
 
         Args:
-            error (CheckViolation):
+            error (NoResultFound):
                 Psycopg2 CheckViolation error.
             engine (Engine):
                 SQLAlchemy engine, it is used to get information from
@@ -33,7 +31,6 @@ class TreatPsycopg2CheckViolation(ErrorTreatmentABC):
         Returns:
             Return a dictionary with message and other exception information.
         """
-        pg_diag = extract_pg_diagnostics(error)
-        message = "Check Violation Database error:\n{message}"
-        return PumpWoodDatabaseError(message=message, payload=pg_diag)\
+        message = "Object not found"
+        return PumpWoodObjectDoesNotExist(message=message, payload={})\
             .to_dict()
