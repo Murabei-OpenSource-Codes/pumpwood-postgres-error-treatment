@@ -51,7 +51,6 @@ class TreatPsycopg2UniqueViolation(ErrorTreatmentABC):
             Return a dictionary with message and other exception information.
         """
         pg_diag = extract_pg_diagnostics(error)
-        print('\n\n\n\npg_diag:', pg_diag)
 
         # Extract columns associated with columns
         query_results = pd.read_sql(
