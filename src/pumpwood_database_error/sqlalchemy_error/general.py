@@ -53,7 +53,7 @@ class TreatSQLAlchemyError(ErrorTreatmentABC):
         # class.
         if TreatPsycopg2Error.can_treat(error.orig):
             return TreatPsycopg2Error\
-                .treat(error=error.orig, engine=engine)
+                .treat(error=error.orig, connection_url=connection_url)
 
         else:
             message = (
