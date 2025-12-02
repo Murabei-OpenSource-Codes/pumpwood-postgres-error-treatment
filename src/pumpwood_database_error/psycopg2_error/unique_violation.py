@@ -3,6 +3,8 @@ import pandas as pd
 from sqlalchemy.engine import Engine
 from psycopg2.errors import UniqueViolation
 from pumpwood_communication.exceptions import PumpWoodDatabaseError
+from pumpwood_database_error.abc import ErrorTreatmentABC
+
 from .auxiliary import extract_pg_diagnostics
 
 
@@ -22,8 +24,17 @@ WHERE 1=1
 """
 
 
-class TreatPsycopg2UniqueViolation:
+class TreatPsycopg2UniqueViolation(ErrorTreatmentABC):
     """Treat unique constrain error from database."""
+
+    @classmethod
+    def can_treat(cls, error: Exception) -> bool:
+        """Check if error is of the type treated by this class.
+
+        Returns:
+            Returns true if error is of the class treated by this class.
+        """
+        return isinstance(error, UniqueViolation)
 
     @classmethod
     def treat(cls, error: UniqueViolation, engine: Engine) -> dict:
@@ -40,7 +51,6 @@ class TreatPsycopg2UniqueViolation:
             Return a dictionary with message and other exception information.
         """
         pg_diag = extract_pg_diagnostics(error)
-        print('\n\n\n\npg_diag:', pg_diag)
 
         # Extract columns associated with columns
         query_results = pd.read_sql(

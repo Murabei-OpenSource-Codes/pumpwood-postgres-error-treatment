@@ -1,15 +1,17 @@
 """Main module to treat SQLAlchemy errors."""
 from loguru import logger
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from pumpwood_database_error.psycopg2 import TreatPsycopg2Error
 from pumpwood_communication.exceptions import PumpWoodDatabaseError
 
+# Load general error treatment
+from pumpwood_database_error.psycopg2_error import TreatPsycopg2Error
+from pumpwood_database_error.sqlalchemy_error import TreatSQLAlchemyError
 
-class TreatSQLAlchemyError:
-    """Class to convert SQLAlchemy associated errors to normalized dict."""
+
+class TreatPumpwoodError:
+    """Centralize error treatment for SQLAlchemy and Psycopg2."""
 
     @classmethod
-    def treat(cls, error: SQLAlchemyError, connection_url: str) -> dict:
+    def treat(cls, error: Exception, connection_url: str) -> dict:
         """Main class to treat SQLAlchemy errors.
 
         Args:
@@ -21,12 +23,15 @@ class TreatSQLAlchemyError:
         Returns:
             Return a dictionary with
         """
-        if isinstance(error, IntegrityError):
+        if TreatSQLAlchemyError.can_treat(error=error):
+            return TreatSQLAlchemyError.treat(
+                error=error, connection_url=connection_url)
+        if TreatPsycopg2Error.can_treat(error=error):
             return TreatPsycopg2Error.treat(
-                error=error.orig, connection_url=connection_url)
+                error=error, connection_url=connection_url)
         else:
             message = (
-                "SQLAlchemy error [{erro_type}] not treated. "
+                "Error [{erro_type}] not treated. "
                 "Message:\n{message}")
             return_dict = PumpWoodDatabaseError(
                 message=message,

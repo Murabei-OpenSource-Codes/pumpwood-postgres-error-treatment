@@ -2,11 +2,22 @@
 from sqlalchemy.engine import Engine
 from psycopg2.errors import TriggeredActionException
 from pumpwood_communication.exceptions import PumpWoodDatabaseError
+from pumpwood_database_error.abc import ErrorTreatmentABC
+
 from .auxiliary import extract_pg_diagnostics
 
 
-class TreatPsycopg2TriggeredActionException:
+class TreatPsycopg2TriggeredActionException(ErrorTreatmentABC):
     """Treat unique constrain error from database."""
+
+    @classmethod
+    def can_treat(cls, error: Exception) -> bool:
+        """Check if error is of the type treated by this class.
+
+        Returns:
+            Returns true if error is of the class treated by this class.
+        """
+        return isinstance(error, TriggeredActionException)
 
     @classmethod
     def treat(cls, error: TriggeredActionException, engine: Engine) -> dict:
