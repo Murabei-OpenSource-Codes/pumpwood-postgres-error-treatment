@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.6] - 2025-12-02
+### Added
+- No adds.
+
+### Changed
+- Fix error when treating `TreatPsycopg2Error`.
+
+### Removed
+- No removes
+
 ## [0.0.5] - 2025-11-14
 ### Added
 - Add treatment of SQLAlchemy `NoResultFound` errors.
