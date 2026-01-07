@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.X] - 2026-01-07
+### Added
+- No adds.
+
+### Changed
+- Return columns to unique error and use specific error for database unique
+  errors.
+
+### Removed
+- No removes
+
 ## [0.0.6] - 2025-12-02
 ### Added
 - No adds.
