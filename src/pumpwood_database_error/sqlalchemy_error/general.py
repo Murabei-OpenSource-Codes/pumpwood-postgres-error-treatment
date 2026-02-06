@@ -5,6 +5,8 @@ from sqlalchemy.pool import NullPool
 from sqlalchemy.exc import SQLAlchemyError
 from pumpwood_database_error.sqlalchemy_error.not_found import (
     TreatSQLAlchemyNoResultFound)
+from pumpwood_database_error.sqlalchemy_error.argument import (
+    TreatSQLAlchemyArgumentError)
 
 # Use psycopg2 class to treat SQLAlchemy errors from psycopg2
 from pumpwood_database_error.psycopg2_error import TreatPsycopg2Error
@@ -48,26 +50,29 @@ class TreatSQLAlchemyError(ErrorTreatmentABC):
         if TreatSQLAlchemyNoResultFound.can_treat(error):
             return TreatSQLAlchemyNoResultFound\
                 .treat(error=error, engine=engine)
+        if TreatSQLAlchemyArgumentError.can_treat(error):
+            return TreatSQLAlchemyArgumentError\
+                .treat(error=error, engine=engine)
 
         # Check if error is from Psycopg2, if so treat it using a expecilised
         # class.
-        if TreatPsycopg2Error.can_treat(error.orig):
-            return TreatPsycopg2Error\
-                .treat(error=error.orig, connection_url=connection_url)
+        if hasattr(error, 'orig'):
+            if TreatPsycopg2Error.can_treat(error.orig):
+                return TreatPsycopg2Error\
+                    .treat(error=error.orig, connection_url=connection_url)
 
-        else:
-            message = (
-                "SQLAlchemy error [{erro_type}] not treated. "
-                "Message:\n{message}")\
-                .format(
-                    erro_type=type(error).__name__,
-                    message=str(error))
-            logger.warning(message)
-            return {
-                "type": "PumpWoodDatabaseError",
-                "message": message,
-                "payload": {
-                    'erro_type': type(error).__name__,
-                    'message': str(error)
-                }
+        message = (
+            "SQLAlchemy error [{erro_type}] not treated. "
+            "Message:\n{message}")\
+            .format(
+                erro_type=type(error).__name__,
+                message=str(error))
+        logger.warning(message)
+        return {
+            "type": "PumpWoodDatabaseError",
+            "message": message,
+            "payload": {
+                'erro_type': type(error).__name__,
+                'message': str(error)
             }
+        }

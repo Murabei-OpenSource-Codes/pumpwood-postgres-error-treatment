@@ -2,7 +2,7 @@
 import pandas as pd
 from sqlalchemy.engine import Engine
 from psycopg2.errors import UniqueViolation
-from pumpwood_communication.exceptions import PumpWoodDatabaseError
+from pumpwood_communication.exceptions import PumpWoodUniqueDatabaseError
 from pumpwood_database_error.abc import ErrorTreatmentABC
 
 from .auxiliary import extract_pg_diagnostics
@@ -60,8 +60,9 @@ class TreatPsycopg2UniqueViolation(ErrorTreatmentABC):
         columns = query_results['column_name'].tolist()
         unique_columns = ", ".join(columns)
         message = (
-            "Unique constrain violated, columns [{unique_columns}] must be "
+            "Unique constrain violated, columns {columns} must be "
             "unique.")
         pg_diag['unique_columns'] = unique_columns
-        return PumpWoodDatabaseError(message=message, payload=pg_diag)\
+        pg_diag['columns'] = columns
+        return PumpWoodUniqueDatabaseError(message=message, payload=pg_diag)\
             .to_dict()

@@ -23,5 +23,6 @@ src/pumpwood_database_error/psycopg2_error/restrict_violation.py
 src/pumpwood_database_error/psycopg2_error/triggered_action_exception.py
 src/pumpwood_database_error/psycopg2_error/unique_violation.py
 src/pumpwood_database_error/sqlalchemy_error/__init__.py
+src/pumpwood_database_error/sqlalchemy_error/argument.py
 src/pumpwood_database_error/sqlalchemy_error/general.py
 src/pumpwood_database_error/sqlalchemy_error/not_found.py
