@@ -17,7 +17,7 @@ class TreatPsycopg2NotNullViolation(ErrorTreatmentABC):
         Returns:
             Returns true if error is of the class treated by this class.
         """
-        return isinstance(error, PumpWoodDatabaseError)
+        return isinstance(error, NotNullViolation)
 
     @classmethod
     def treat(cls, error: NotNullViolation, engine: Engine) -> dict:
